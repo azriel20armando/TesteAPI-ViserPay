@@ -28,6 +28,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+
   const handleProductChange = (e: FormEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     setProductForm({ ...productForm, [name]: value });
@@ -81,7 +83,7 @@ export default function Home() {
     setSuccess(null);
 
     try {
-      const response = await fetch('http://localhost:3000/api/initiate-payment', {
+      const response = await fetch(`${backendUrl}/api/initiate-payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,16 +119,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl bg-white shadow-xl rounded-2xl overflow-hidden"
+        className="w-full max-w-4xl bg-zinc-200 shadow-xl rounded-2xl overflow-hidden"
       >
         <div className="p-6 sm:p-8">
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-8 flex items-center justify-center gap-4">
-            E-commerce Transmissiva
+          <h1 className="text-3xl font-bold text-gray-900 text-center mb-8 flex items-center justify-between gap-4">
+           Vendas Transmissiva
             <img
               className="w-20"
               src="/LOGO_TRANSMISSIVA__Prancheta_1-removebg-preview.png"
@@ -145,8 +147,9 @@ export default function Home() {
                   name="name"
                   value={productForm.name}
                   onChange={handleProductChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                  placeholder="Ex: Camiseta"
+                  className="w-full p-3 border border-gray-400 text-zinc-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  placeholder="Ex: Computador"
+                  autoComplete='off'
                   required
                 />
               </div>
@@ -157,10 +160,11 @@ export default function Home() {
                   name="price"
                   value={productForm.price}
                   onChange={handleProductChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full p-3 border border-gray-400 text-zinc-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                   step="0.01"
                   placeholder="Ex: 5000.00"
                   required
+                  autoComplete='off'
                 />
               </div>
               <div>
@@ -170,9 +174,10 @@ export default function Home() {
                   name="quantity"
                   value={productForm.quantity}
                   onChange={handleProductChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full p-3 border border-gray-400 text-zinc-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                   min="1"
                   required
+                  autoComplete='off'
                 />
               </div>
             </div>
@@ -237,7 +242,7 @@ export default function Home() {
                     </tbody>
                   </table>
                 </div>
-                <p className="mt-4 text-lg font-semibold text-gray-800 text-right">
+                <p className="mt-4 text-lg font-semibold text-gray-800 text-right pr-4">
                   Total: AOA {calculateTotal()}
                 </p>
               </motion.div>
@@ -255,8 +260,9 @@ export default function Home() {
                   name="customer_name"
                   value={customerForm.customer_name}
                   onChange={handleCustomerChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full p-3 border border-gray-400 text-zinc-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                   required
+                  autoComplete='off'
                 />
               </div>
               <div>
@@ -266,8 +272,9 @@ export default function Home() {
                   name="customer_email"
                   value={customerForm.customer_email}
                   onChange={handleCustomerChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full p-3 border border-gray-400 text-zinc-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                   required
+                  autoComplete='off'
                 />
               </div>
               <div>
@@ -276,8 +283,9 @@ export default function Home() {
                   type="tel"
                   name="customer_phone"
                   value={customerForm.customer_phone}
+                  autoComplete='off'
                   onChange={handleCustomerChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full p-3 border border-gray-400 text-zinc-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
               </div>
             </div>

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: viserpaydb
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/viserpaydb?schema=public
+      VISERPAY_PUBLIC_KEY: sua_chave_publica
+      VISERPAY_SECRET_KEY: sua_chave_secreta
+      VISERPAY_ENV: sandbox
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    command: sh -c "npx prisma migrate deploy && npm start"
+
+  frontend:
+    build: ./frontend
+    restart: always
+    environment:
+      NEXT_PUBLIC_BACKEND_URL: http://backend:3000
+    ports:
+      - '3001:3000'
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:
