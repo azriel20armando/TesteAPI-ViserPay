@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ecommerce_db
+    volumes:
+      - ecommerce_data:/var/lib/postgresql/data # Volume nomeado para persistir dados
+    ports:
+      - "5432:5432"
+
+volumes:
+  ecommerce_data: # Declaração do volume nomeado
+    driver: local # Usando o driver local para persistência de dados
+    driver_opts:
+      type: none
+      device: /var/lib/postgresql/data # Caminho do dispositivo no host
+      o: bind # Opção de montagem bind
