@@ -21,22 +21,22 @@ services:
       VISERPAY_PUBLIC_KEY: sua_chave_publica
       VISERPAY_SECRET_KEY: sua_chave_secreta
       VISERPAY_ENV: sandbox
-      PORT: 3000
+      PORT: 3001
     ports:
-      - '3000:3000'
+      - '3001:3001'
     depends_on:
       - db
-    command: sh -c "npx prisma migrate deploy && npm start"
 
   frontend:
     build: ./frontend
     restart: always
     environment:
-      NEXT_PUBLIC_BACKEND_URL: http://backend:3000
+      NEXT_PUBLIC_BACKEND_URL: http://backend:3001
     ports:
-      - '3001:3000'
+      - '3000:3000'
     depends_on:
       - backend
 
 volumes:
   postgres-data:
+  
