@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Alvo ES2020 para compatibilidade com async/await
+    "module": "CommonJS", // Módulos CommonJS para Node.js
+    "strict": true, // Ativa verificações estritas de tipos
+    "esModuleInterop": true, // Permite importações ES Module em CommonJS
+    "skipLibCheck": true, // Ignora checagem de tipos em bibliotecas
+    "forceConsistentCasingInFileNames": true, // Força consistência em nomes de arquivos
+    "outDir": "./dist", // Diretório de saída para compilação
+    "rootDir": "./src" // Diretório raiz do código fonte
+  },
+  "include": ["src/**/*"], // Inclui todos os arquivos em src
+  "exclude": ["node_modules"] // Exclui node_modules
+}

@@ -1,0 +1,27 @@
+version: '3.8'  # Versão do Compose
+services:
+  db:  # Serviço para PostgreSQL
+    image: postgres:16  # Imagem Postgres 16
+    restart: always  # Reinicia sempre
+    environment:  # Variáveis de ambiente
+      POSTGRES_USER: user  # Usuário DB
+      POSTGRES_PASSWORD: password  # Senha DB
+      POSTGRES_DB: viserpay_db  # Nome DB
+    ports:
+      - '5432:5432'  # Expõe porta 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Volume persistente
+
+  backend:  # Serviço para backend
+    build: ./backend  # Builda de ./backend/Dockerfile
+    ports:
+      - '3000:3000'  # Expõe porta 3000
+    depends_on:
+      - db  # Depende do DB
+    environment:  # Variáveis de ambiente
+      DATABASE_URL: postgres://user:password@db:5432/viserpay_db  # URL interna
+      VISERPAY_PUBLIC_KEY: ${VISERPAY_PUBLIC_KEY}  # Puxa de .env
+      VISERPAY_SECRET_KEY: ${VISERPAY_SECRET_KEY}  # Puxa de .env
+
+volumes:
+  postgres_data:  # Define volume

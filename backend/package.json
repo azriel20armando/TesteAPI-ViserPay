@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.0",
+    "@tsconfig/node22": "^22.0.2",
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^6.1.1",
     "@types/mime-types": "^3.0.1",

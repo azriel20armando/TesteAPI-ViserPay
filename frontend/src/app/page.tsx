@@ -1,92 +1,92 @@
-'use client';
+'use client'; // Marca como componente client-side
 
-import { useState, FormEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, FormEvent } from 'react'; // Importa hooks React
+import { motion, AnimatePresence } from 'framer-motion'; // Importa animações Framer Motion
 
-interface Product {
+interface Product { // Interface para produto
   id: number;
   name: string;
   price: number;
   quantity: number;
 }
 
-interface FormData {
+interface FormData { // Interface para dados do cliente
   customer_name: string;
   customer_email: string;
   customer_phone: string;
 }
 
-export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [productForm, setProductForm] = useState({ name: '', price: '', quantity: '1' });
-  const [customerForm, setCustomerForm] = useState<FormData>({
+export default function Home() { // Componente principal
+  const [products, setProducts] = useState<Product[]>([]); // Estado para lista de produtos
+  const [productForm, setProductForm] = useState({ name: '', price: '', quantity: '1' }); // Estado para form de produto
+  const [customerForm, setCustomerForm] = useState<FormData>({ // Estado para form de cliente
     customer_name: '',
     customer_email: '',
     customer_phone: '',
   });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); // Estado de loading
+  const [error, setError] = useState<string | null>(null); // Estado de erro
+  const [success, setSuccess] = useState<string | null>(null); // Estado de sucesso
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'; // URL backend de env
 
-  const handleProductChange = (e: FormEvent<HTMLInputElement>) => {
+  const handleProductChange = (e: FormEvent<HTMLInputElement>) => { // Handler para mudança em input de produto
     const { name, value } = e.currentTarget;
-    setProductForm({ ...productForm, [name]: value });
+    setProductForm({ ...productForm, [name]: value }); // Atualiza estado
   };
 
-  const handleCustomerChange = (e: FormEvent<HTMLInputElement>) => {
+  const handleCustomerChange = (e: FormEvent<HTMLInputElement>) => { // Handler para mudança em input de cliente
     const { name, value } = e.currentTarget;
-    setCustomerForm({ ...customerForm, [name]: value });
+    setCustomerForm({ ...customerForm, [name]: value }); // Atualiza estado
   };
 
-  const addProduct = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!productForm.name || !productForm.price || !productForm.quantity) {
+  const addProduct = (e: FormEvent<HTMLFormElement>) => { // Adiciona produto ao carrinho
+    e.preventDefault(); // Previne reload
+    if (!productForm.name || !productForm.price || !productForm.quantity) { // Valida campos
       setError('Preencha todos os campos do produto.');
       return;
     }
-    setProducts([
+    setProducts([ // Adiciona novo produto
       ...products,
       {
-        id: Date.now(),
+        id: Date.now(), // ID único baseado em timestamp
         name: productForm.name,
         price: parseFloat(productForm.price),
         quantity: parseInt(productForm.quantity),
       },
     ]);
-    setProductForm({ name: '', price: '', quantity: '1' });
-    setError(null);
+    setProductForm({ name: '', price: '', quantity: '1' }); // Reseta form
+    setError(null); // Limpa erro
   };
 
-  const removeProduct = (id: number) => {
-    setProducts(products.filter((product) => product.id !== id));
+  const removeProduct = (id: number) => { // Remove produto por ID
+    setProducts(products.filter((product) => product.id !== id)); // Filtra lista
   };
 
-  const calculateTotal = () => {
-    return products.reduce((total, product) => total + product.price * product.quantity, 0).toFixed(2);
+  const calculateTotal = () => { // Calcula total do carrinho
+    return products.reduce((total, product) => total + product.price * product.quantity, 0).toFixed(2); // Soma preços
   };
 
-  const handleCheckout = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (products.length === 0) {
+  const handleCheckout = async (e: FormEvent<HTMLFormElement>) => { // Inicia checkout
+    e.preventDefault(); // Previne reload
+    if (products.length === 0) { // Valida carrinho
       setError('Adicione pelo menos um produto ao carrinho.');
       return;
     }
-    if (!customerForm.customer_name || !customerForm.customer_email) {
+    if (!customerForm.customer_name || !customerForm.customer_email) { // Valida cliente
       setError('Preencha os dados do cliente.');
       return;
     }
 
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+    setLoading(true); // Ativa loading
+    setError(null); // Limpa erro
+    setSuccess(null); // Limpa sucesso
 
     try {
-      const response = await fetch(`${backendUrl}/api/initiate-payment`, {
+      const response = await fetch(`${backendUrl}/api/initiate-payment`, { // Fetch para backend
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: JSON.stringify({ // Body com dados, incluindo products para DB
           customer_name: customerForm.customer_name,
           customer_email: customerForm.customer_email,
           customer_phone: customerForm.customer_phone,
@@ -94,30 +94,32 @@ export default function Home() {
           details: `Compra de ${products.length} produto(s)`,
           currency: 'AOA',
           identifier: `ORDER_${Date.now()}`,
-          ipn_url: 'http://your-site.com/api/ipn',
+          ipn_url: `${backendUrl}/api/ipn`, // IPN aponta para backend
           success_url: 'http://localhost:3001/success',
           cancel_url: 'http://localhost:3001/cancel',
           site_logo: 'https://your-site.com/logo.png',
           checkout_theme: 'light',
+          products: products, // Envia produtos para armazenamento no DB
         }),
       });
 
-      const data = await response.json();
-      if (data.success === 'ok') {
+      const data = await response.json(); // Parseia resposta
+      if (data.success === 'ok') { // Se sucesso, redireciona
         setSuccess('Pagamento iniciado! Redirecionando...');
         setTimeout(() => {
           window.location.href = data.url;
         }, 1500);
-      } else {
+      } else { // Se erro, seta mensagem
         setError(data.message || 'Erro ao iniciar o pagamento');
       }
-    } catch (err) {
+    } catch (err) { // Captura erros de rede
       setError('Erro ao processar o pagamento: ' + (err as Error).message);
     } finally {
-      setLoading(false);
+      setLoading(false); // Desativa loading
     }
   };
 
+  // JSX do componente (código fornecido, sem alterações além de handlers)
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <motion.div
